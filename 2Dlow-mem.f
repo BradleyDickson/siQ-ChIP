@@ -11,7 +11,7 @@
       
       inplines=nlines
       maxl=1000 !may or may not be robust but this is longest length now
-      nbinl1=int(dble(maxl)/dble(ishl))!for xlink it will be larger.
+      nbinl1=0!int(dble(maxl)/dble(ishl))!for xlink it will be larger.
       read(15,*) nlines, min, max !assume 1 to max for domain      
       iplines=nlines
       close(15)
