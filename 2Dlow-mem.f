@@ -264,7 +264,9 @@ c         !project to 1D here for browser gazing
          endif
       endif
 
-
+      open(88,file='chrLOCN.fin')
+      write(88,*) done
+      close(88)
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       end
             
