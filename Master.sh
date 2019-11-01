@@ -8,7 +8,7 @@ done
 nfs=0
 while [ $nfs -lt 22 ] ; do
 sleep 60
-nfs=`for w in chr*.ce ; do echo $w;done | wc |awk '{print $1}'`
+nfs=`for w in chr*.fin ; do echo $w;done | wc |awk '{print $1}'`
 done
 
 
