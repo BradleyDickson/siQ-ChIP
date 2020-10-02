@@ -45,9 +45,14 @@ c      close(33)
 
 ! your ct is built in this estimated library conc. 
 ! 10 nano grams apli ct times: (so we hardcoded for 10ng)
-
-      cexpectIN=1e-09*10d0*2d0**ct/(dble(lengthin)*660d0)/(20d0*1e-06)
-      cexpectIP=1e-09*10d0*2d0**ct/(dble(lengthip)*660d0)/(20d0*1e-06)
+!remove hardcode
+      cexpectIN=1e-09*par(20)*2d0**ct
+     .     /(dble(lengthin)*660d0)/(20d0*1e-06)
+      cexpectIP=1e-09*par(15)*2d0**ct
+     .     /(dble(lengthip)*660d0)/(20d0*1e-06)
+!hardcoded to 10ng
+c      cexpectIN=1e-09*10d0*2d0**ct/(dble(lengthin)*660d0)/(20d0*1e-06)
+c      cexpectIP=1e-09*10d0*2d0**ct/(dble(lengthip)*660d0)/(20d0*1e-06)
       cexpectIN=1000d0*cexpectIN*1e+06 !convert to nM, [library] is in nM
       cexpectIP=1000d0*cexpectIP*1e+06 !convert to nM
 
@@ -137,7 +142,7 @@ c      open(13,file="in.chr2") !FILENAME checks here
 
             do j=1,idif
             write(44,*) unk, ibigstrt+(j-1)*nbres, ibigstrt+j*nbres
-     .              , factr*c(j)/dble(nbres)!, c(j)/dble(nbres) !this column is unscaled
+     .              , factr*c(j)/dble(nbres), c(j)/dble(nbres) !this column is unscaled
             enddo
             do k=idif+1,1000!shift to next windows
                c(k-(idif))=c(k)
@@ -237,7 +242,7 @@ c         !project to 1D here for browser gazing
 
             do j=1,idif
             write(44,*) unk, ibigstrt+(j-1)*nbres, ibigstrt+j*nbres
-     .              , factr*c(j)/dble(nbres)!, c(j)/dble(nbres) !remove 
+     .              , factr*c(j)/dble(nbres), c(j)/dble(nbres) !remove 
             enddo
             do k=idif+1,1000!shift to next windows
                c(k-(idif))=c(k)
