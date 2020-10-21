@@ -1,6 +1,8 @@
 # siQ-ChIP: sans spike-in Quantitative ChIP-seq
 This is the small package of bash and fortran codes used to quantify ChIP-seq data without requiring "spike-ins" to be added to your ChIP-seq protocol.
 
+**The publication 'A physical basis for quantitative ChIP-seq' can be found at JBC [here.](https://www.jbc.org/content/early/2020/09/29/jbc.RA120.015353) There is also an interactive web page devoted to the mathematical model [here.](http://proteinknowledge.com/siqD3/)**
+
 The user must supply three inputs:
 
 - A file called "params.in" which contains all the empirical coefficients of siQ-ChIP. One of our params.in files is included in this repository for reference. The file contents are given by a column of the table (Table S1 from the paper LINKtoPAPER) <img src="./paramstable.svg"/>
