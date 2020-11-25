@@ -92,9 +92,9 @@ This configuration allows any chromosome to be processed individually. To proces
 ## Outputfiles and formats
 The siQ-ChIP computations are done by the code 2Dlow-mem.f, which outputs several files. These are the files and their basic format:
 
-- chr$i.ce is the siQ-ChIP cumulative efficiency <a href="https://www.codecogs.com/eqnedit.php?latex=\hat{e}(x)" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\hat{e}(x)" title="\hat{e}(x)" /></a> for chromosome $i. Where "ce" is the cumulative efficiency, the file format is:
+- chr$i.ce is the siQ-ChIP cumulative efficiency <a href="https://www.codecogs.com/eqnedit.php?latex=\hat{e}(x)" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\hat{e}(x)" title="\hat{e}(x)" /></a> for chromosome $i. Where "ce" is the cumulative efficiency and "raw" is unscaled IP/input, the file format is:
 ~~~~
-chr$i start end ce
+chr$i start end ce raw
 ~~~~
 
 - chr$i.2d is the siQ-ChIP object <a href="https://www.codecogs.com/eqnedit.php?latex=\hat{e}(x,L)" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\hat{e}(x,L)" title="\hat{e}(x,L)" /></a>. Where "exl" is the value, the file format is:
