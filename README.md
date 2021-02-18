@@ -3,17 +3,14 @@ This is the small package of bash and fortran codes used to quantify ChIP-seq da
 
 **The publication 'A physical basis for quantitative ChIP-seq' can be found at JBC [here.](https://www.jbc.org/content/early/2020/09/29/jbc.RA120.015353) There is also an interactive web page devoted to the mathematical model [here.](http://proteinknowledge.com/siqD3/)**
 
-The user must supply three inputs:
+This is v2.0.0 of the siQ-ChIP software. The workflow is streamlined and simplified. The output is automatically in fraction-fragments-captured (so the <a href="https://www.codecogs.com/eqnedit.php?latex=\langle&space;L&space;\rangle" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\langle&space;L&space;\rangle" title="\langle L \rangle" /></a> factor from the paper may be avoided now) and resolution is set to 100bp. This is hard coded in the runCrunch.sh script, and can be edited.
 
-- A file called "params.in" which contains all the empirical coefficients of siQ-ChIP. One of our params.in files is included in this repository for reference. The file contents are given by a column of the table (Table S1 from the paper LINKtoPAPER) <img src="./paramstable.svg"/>
+The user must supply the following inputs:
 
-- A file called "resi" which specifies (1) the resolution with which to compute <a href="https://www.codecogs.com/eqnedit.php?latex=\hat{e}(x,L)" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\hat{e}(x,L)" title="\hat{e}(x,L)" /></a>, (2) the bin-size for discreting the fragment length L, and (3) the resolution with which to compute <a href="https://www.codecogs.com/eqnedit.php?latex=\hat{e}(x)" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\hat{e}(x)" title="\hat{e}(x)" /></a> and a coarse <a href="https://www.codecogs.com/eqnedit.php?latex=\hat{e}(x,L)" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\hat{e}(x,L)" title="\hat{e}(x,L)" /></a>. the high-res <a href="https://www.codecogs.com/eqnedit.php?latex=\hat{e}(x,L)" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\hat{e}(x,L)" title="\hat{e}(x,L)" /></a> is written to a file called "chr$.2d" where "$" is the chromosome number and the lower-res <a href="https://www.codecogs.com/eqnedit.php?latex=\hat{e}(x,L)" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\hat{e}(x,L)" title="\hat{e}(x,L)" /></a> is write to "chr$.2dLR" where the "LR" stands for lower-resolution. The cumulative efficiency (<a href="https://www.codecogs.com/eqnedit.php?latex=\hat{e}(x)" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\hat{e}(x)" title="\hat{e}(x)" /></a>) is written to "chr$.ce". The main figures from our paper (ADD CITE) were generated with a resi file that looked like this:
+- A file called "params.in" which contains all the empirical coefficients of siQ-ChIP. One of our params.in files is included in this repository for reference. The file contents are given by a column of the interactive table [here](./interactive_siQ_table.xlsx) contributed by Robert Vaughan.
 
-~~~~
-300 50 10000
-~~~~
 
-- A file containing all QC'd paired-end reads. An example of the first few lines of this file are as follows where the start, stop and length of reads is listed:
+- A file containing all QC'd paired-end reads for an IP and an INPUT sample. An example of the first few lines of one of these files are as follows where the start, stop and length of reads is listed:
 
 ~~~~
 chr1	100000041	100000328	287
@@ -34,79 +31,53 @@ awk -v MAQ=20 ‘$5>=MAQ && $2==99 || $5>=MAQ && $2==163 {print $3”\t”$4”\
 
 ## Running the calculation:
 
-This code is designed to make use of a compute environment that supports a parallel filesystem and compute nodes with more than 23 CPU in a node. You may need to customize the scripts to prevent running all chromosomes simultaneously if your environment does not accommodate the intended batch execution.
-
-In all of our applications the following script was used to launch whole genome processing, parallelized by chromosome number. **Notice that the paths to respective input and IP data files are specified in this script.** This script also waits in our PBS queue for all the jobs to complete before exiting PBS:
+This is now a serial process requiring 1 cpu, running for a few minutes on our HPC. The IPfile and INPUTfile paths+names must not exceed 65 characters. THESE are to be SORTED BED files. The TAG argument is simply the name you wish for your output siQ-ChIP track. **gfortran is required** though you can use a different compiler if you modify runCrunch.sh.
 
 ~~~~
-#launch all copies
-for((i=1;i<23;i++)); do
-nohup ./Slave.sh $i inputPATH/inputFILE ipPATH/ipFILE &
-done
-#wait for all copies to complete
-#code failure can hang this loop forever, FYI
-nfs=0
-while [ $nfs -lt 22 ] ; do
-sleep 60
-nfs=`for w in chr*.ce ; do echo $w;done | wc |awk '{print $1}'`
-done
+./runCrunch.sh IPFILE INPUTFILE params.in TAG
 ~~~~
 
-The contents of the script Slave.sh were as follows:
+The contents of the script runCrunch.sh were as follows:
 
 ~~~~
-#parse out named-chr and run code on it
-i=`echo $1`
-fnamein=`echo $2`
+narg=`echo $@ | wc |awk '{print $2}'`
+if [ $narg -lt 4 ] ; then
+echo 'Run this scrtip as:
+./runCrunch.sh IPFILE INPUTFILE PARAMfile TAG
 
-grep -P chr$i"\t" $fnamein |sort -n -k2 > in.chr$i 
-nl=`wc in.chr$i |awk '{print $1}'`
-min=`head -1 in.chr$i |awk '{print $2}'`
-max=`tail -1 in.chr$i |awk '{print $2}'`
-echo $nl $min $max > flines$i
-sum=0
+The path and name of IPFILE and INPUTFILE must be less than 65 characters
+PARAMfile are the siqchip measurements
+TAG is the name your final SIQ-ChIP file will have
+Currently you are missing one of these arguments. <----
+'
+else 
+ipfile=`echo $1`
+infile=`echo $2`
+paramfile=`echo $3`
+tag=`echo $4`
 
-fnameip=`echo $3`
-grep -P chr$i"\t" $fnameip |sort -n -k2 > ip.chr$i 
-nl=`wc ip.chr$i |awk '{print $1}'`
-min=`head -1 ip.chr$i |awk '{print $2}'`
-max=`tail -1 ip.chr$i |awk '{print $2}'`
-echo $nl $min $max >> flines$i
-
-#prep for target
-cp 2Dlow-mem.f tmp$i.f
-#name target
-cmd=`echo "sed -i 's/LOCN/"$i"/g'" tmp$i.f`
-eval $cmd
-#compile and then run
-gfortran -O3 -fbounds-check -o $i.exe tmp$i.f
-./$i.exe
-
+#get ip and input tracks
+#the 100 100 here is the resolution in bp for the IP and input respectively
+#you can change it but we wonder what it means to go lower than about a nucleosome in size
+gfortran -O3 -fbounds-check tracks.f90
+#the 100 100 is the resolution. you can change this but do change both numbers
+./a.out $ipfile $infile 100 100 
+#get alpha
+gfortran -O3 -fbounds-check getalpha.f90
+a=`./a.out $paramfile`
+#merge
+gfortran -O3 -fbounds-check mergetracks.f90
+./a.out IP.data IN.data $a
+#./a.out IP.data INave.data $a
+#mv to a name
+mv mergedSIQ.data SIQ$tag.bed
+echo "you created the file: " SIQ$tag.bed
+fi
 ~~~~
 
-This configuration allows any chromosome to be processed individually. To process chromosome "i" one would use:
-~~~~
-./Slave.sh i inputPath/inputFile ipPath/ipFile
-~~~~
 
 ## Outputfiles and formats
-The siQ-ChIP computations are done by the code 2Dlow-mem.f, which outputs several files. These are the files and their basic format:
 
-- chr$i.ce is the siQ-ChIP cumulative efficiency <a href="https://www.codecogs.com/eqnedit.php?latex=\hat{e}(x)" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\hat{e}(x)" title="\hat{e}(x)" /></a> for chromosome $i. Where "ce" is the cumulative efficiency and "raw" is unscaled IP/input, the file format is:
-~~~~
-chr$i start end ce raw
-~~~~
+The code will output a bedfile named SIQtag.bed where tag is specified at runtime using the TAG argument of runCrunch.sh
 
-- chr$i.2d is the siQ-ChIP object <a href="https://www.codecogs.com/eqnedit.php?latex=\hat{e}(x,L)" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\hat{e}(x,L)" title="\hat{e}(x,L)" /></a>. Where "exl" is the value, the file format is:
-~~~~
-chr$i fragment-start fragment-length exl
-~~~~
-
-- chr$1.2dLR is a per-base-pair average of <a href="https://www.codecogs.com/eqnedit.php?latex=\hat{e}(x,L)" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\hat{e}(x,L)" title="\hat{e}(x,L)" /></a> as described in the manuscript. the file format is the same as for chr$i.2d
-
-The siQ-ChIP code processes all chromosomes in parallel and write output for each one. To combine them all into a single genome-wide summary use:
-~~~~
-cat chr*.ce | sort -k1,1 -k2,2n > sorted.bedGraph
-~~~~
-
-The sorted.bedGraph file can then be converted into a bigwig file using bedGraphToBigWig from UCSC tools.
+The bedGraph file can then be converted into a bigwig file using bedGraphToBigWig from UCSC tools.
