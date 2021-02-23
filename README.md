@@ -7,7 +7,7 @@ This is v2.0.0 of the siQ-ChIP software. The workflow is streamlined and simplif
 
 The user must supply the following inputs:
 
-- A file called "params.in" which contains all the empirical coefficients of siQ-ChIP. One of our params.in files is included in this repository for reference. The file contents are given by a column of the interactive table [here](./interactive_siQ_table.xlsx) contributed by Robert Vaughan.
+- A file called "params.in" which contains all the empirical coefficients of siQ-ChIP. One of our params.in files is included in this repository for reference. The file contents are given by a column of the interactive table [here](./interactive_siQ_table.xlsx) contributed by Robert Vaughan. We note that you may enter Library 'concentration' as ng/uL. The units of rho will be broken but only the ratio of rho and rho_in will appear in alpha, so this unit missmatch is resolved and you can skip conversions.
 
 
 - A file containing all QC'd paired-end reads for an IP and an INPUT sample. An example of the first few lines of one of these files are as follows where the start, stop and length of reads is listed:
