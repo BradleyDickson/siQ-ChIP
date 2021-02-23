@@ -37,25 +37,24 @@
       lengthip=par(19)
       readin=1d0!unity
       readip=1d0
-! your ct is built in this estimated library conc. 
-! 10 nano grams apli ct times: (so we hardcoded for 10ng)
-!remove hardcode
       cexpectIN=1e-09*par(20)*2d0**ct &
-          /(dble(lengthin)*660d0)/(20d0*1e-06)
+          /(dble(lengthin)*660d0)/(par(17)*1e-06)
       cexpectIP=1e-09*par(15)*2d0**ct &
-          /(dble(lengthip)*660d0)/(20d0*1e-06)
-!hardcoded to 10ng
-!      cexpectIN=1e-09*10d0*2d0**ct/(dble(lengthin)*660d0)/(20d0*1e-06)
-!      cexpectIP=1e-09*10d0*2d0**ct/(dble(lengthip)*660d0)/(20d0*1e-06)
-      cexpectIN=1000d0*cexpectIN*1e+06 !convert to nM, [library] is in nM
-      cexpectIP=1000d0*cexpectIP*1e+06 !convert to nM
-!check it out if you want to:
-!      write(*,*) cexpectIN, cexpectIP
-!      write(*,*) concin/cexpectIN, concip/cexpectIP
-!      write(*,*) (concin/cexpectIN)/(concip/cexpectIP)
-!      stop
-      ampliin = 2d0**ct/((cexpectIN/concin)) !assumed in nM
-      ampliip = 2d0**ct/((cexpectIP/concip)) !nM units!!!
+          /(dble(lengthip)*660d0)/(par(17)*1e-06)
+      cexpectIP= &
+      par(15)*1e-09/(par(19)*660d0) *2d0**ct/(par(17)*1e-06)*1e+09
+      actualIP=par(18)*1e-09*par(17)/(660d0*par(19))/(par(17)*1e-06)*1e+09
+      cexpectIN= &
+      par(20)*1e-09/(par(24)*660d0) *2d0**ct/(par(22)*1e-06)*1e+09
+      actualIN=par(23)*1e-09*par(22)/(660d0*par(24))/(par(22)*1e-06)*1e+09
+!      write(*,*) "expected and actual in nM"
+!      write(*,*) cexpectIP
+!      write(*,*) actualIP/cexpectIP
+!      write(*,*) cexpectIN
+!      write(*,*) actualIN
+!      write(*,*) actualIN/cexpectIN
+      ampliin = 2d0**ct/((cexpectIN/actualIN)) !assumed in nM
+      ampliip = 2d0**ct/((cexpectIP/actualIP)) !nM units!!!
       factr= readin*fi*fil*ampliin*vr/(fb*fbl*ampliip*readip)
       write(*,*) factr
 !      stop
