@@ -3,7 +3,7 @@ This is the small package of bash and fortran codes used to quantify ChIP-seq da
 
 **The publication 'A physical basis for quantitative ChIP-seq' can be found at JBC [here.](https://www.jbc.org/content/early/2020/09/29/jbc.RA120.015353) There is also an interactive web page devoted to the mathematical model [here.](http://proteinknowledge.com/siqD3/)**
 
-This is v2.0.0 of the siQ-ChIP software. The workflow is streamlined and simplified. The output is automatically in fraction-fragments-captured (so the <a href="https://www.codecogs.com/eqnedit.php?latex=\langle&space;L&space;\rangle" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\langle&space;L&space;\rangle" title="\langle L \rangle" /></a> factor from the paper may be avoided now) and resolution is set to 100bp. This is hard coded in the runCrunch.sh script, and can be edited.
+This is v2.0.0 of the siQ-ChIP software. The workflow is streamlined and simplified. The output is automatically in fraction-fragments-captured (so the <a href="https://www.codecogs.com/eqnedit.php?latex=\langle&space;L&space;\rangle" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\langle&space;L&space;\rangle" title="\langle L \rangle" /></a> factor from the paper may be avoided now) and resolution is set to 100bp. This is hard coded in the runCrunch.sh script, and can be edited. Lastly, the cycles used in library prep are currently assumed equal for inputs and IPs. If you need this changed, let us know.
 
 The user must supply the following inputs:
 
