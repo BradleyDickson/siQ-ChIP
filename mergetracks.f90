@@ -1,5 +1,5 @@
       integer bin(100000)
-      real*8 iphits,inhits
+      real*8 iphits,inhits,totalcount,count,dep,factr
       integer Reason,Reason2,ilft,irght,ilft2,irght2
       character(len=5) :: unk,rchr !should have been filtered to chrxx by now
       character(len=5) :: unk2,rchr2
@@ -7,11 +7,12 @@
       character(len=62) :: arg
       character(len=62) :: path(3)
       logical :: file_exists
-
+      totalcount=0d0
+      count=0d0
       inot=0
       iread=0
       rchr="chr1" !starts on chr1
-      do i=1,iargc()
+      do i=1,2!iargc()
          call getarg(i, arg)
          path(i)=arg
       enddo
@@ -31,6 +32,8 @@
       endif
       call getarg(3,arg)
       read(arg,*)factr!this is alpha
+      call getarg(4,arg)
+      read(arg,*)dep!this is expected depth input
 
       open(88,file='mergedSIQ.data')
       !match intervals as much as possible      
@@ -48,12 +51,22 @@
          elseif(Reason2.eq.0)then
 12345       continue
             if(unk == unk2.and.ilft.le.irght2.and.ilft2.le.irght)then!intersect
-               if(inhits.lt.1)inhits=oin!no boom
-               if(inhits.gt.0d0)then!dont smooth input
-!               if(inhits.gt.14d0)then!7d0 is 100m-depth estimate
+!               if(inhits.lt.1)inhits=oin!no boom
+!               if(inhits.gt.0d0)then!dont smooth input
+!               dep=5.29491465d0! a485
+!               dep=5.915557010625d0! cbp
+!               dep=5.507106525d0! dmso
+!               dep=4.725d0 !k9ac low
+!               dep=inhits!use input
+               totalcount=totalcount+1d0
+               if(inhits.gt.dep)then!7d0 is 100m-depth estimate
                write(88,*) unk, ilft, irght, factr*iphits/inhits
-!               else   !these lines are for smoothing input
+!!               write(88,*) unk, ilft, irght, factr*iphits/1d0
+               else   !these lines are for smoothing input
 !               write(88,*) unk, ilft, irght, factr*iphits/7d0
+!               write(88,*) unk, ilft, irght, factr*iphits/inhits !this is to block fakeinputs
+               write(88,*) unk, ilft, irght, factr*iphits/dep !this has fake input
+               count=count+1d0
                endif
                !get a new IP line and return to check
                read(12,*,IOSTAT=Reason) unk, ilft, irght, iphits
@@ -79,4 +92,5 @@
       close(88)
       close(12)
       close(13)
+      write(*,*)"i counted it as this ", totalcount, count
       end program

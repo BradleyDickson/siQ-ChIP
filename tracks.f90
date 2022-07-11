@@ -1,4 +1,6 @@
-      integer bin(100000),nleng(2),ilft, irght, leng,leftend,rightend,Reason,sum,lpos
+      real*8 bin(100000),sum,itops
+!      integer bin(100000),nleng(2),ilft, irght, leng,leftend,rightend,Reason,sum,lpos
+      integer nleng(2),ilft, irght, leng,leftend,rightend,Reason,lpos
       character(len=6) :: unk,rchr
       character(len=5) :: unk2,rchr2
       character(len=44) :: siq!for hmm annos
@@ -27,7 +29,7 @@
          stop
       endif
 
-      bin=0
+      bin=0d0
       leftend=0
       rightend=0
 
@@ -48,7 +50,7 @@
 
          if(ilft.gt.rightend.and.unk == rchr)then
             !write out the current bin of data
-            if(itops.gt.1)then
+            if(itops.gt.1*0)then !nonempty
                lpos=leftend
                ave=0d0
                count=0d0
@@ -62,7 +64,7 @@
                      sum=sum+bin(j)
                   enddo
 !                  write(88,*) unk, lpos-nleng(k)/2, dble(sum)/dble(nleng(k))
-                  write(88,*) unk, lpos-idub,lpos-1, dble(sum)/dble(idub)
+                  write(88,*) unk, lpos-idub,lpos-1, dble(sum)!/dble(idub)
                   ave=ave+dble(sum)/dble(idub)
                   count=count+1d0
                enddo
@@ -76,7 +78,7 @@
             leftend=ilft
             rightend=ilft+leng!same as irght sometimes
             do i=1,rightend-leftend
-               bin(i)=bin(i)+1
+               bin(i)=bin(i)+1d0/leng
                itops=max(itops,bin(i))
             enddo
             go to 12345
@@ -90,18 +92,18 @@
 !            endif
             if(1+ilft-leftend.lt.100000.and.rightend-leftend.le.100000)then
             do i=min(100000,1+ilft-leftend),min(100000,1+ilft-leftend+leng)!rightend-leftend
-               bin(i)=bin(i)+1
+               bin(i)=bin(i)+1d0/leng
                itops=max(itops,bin(i))
             enddo   
             go to 12345
             else!the bounds of bin will be exceeded so reset bins now-can happen on inputs
                !final update and dump it out
                do i=min(100000,1+ilft-leftend),min(100000,1+ilft-leftend+leng)!rightend-leftend
-                  bin(i)=bin(i)+1
+                  bin(i)=bin(i)+1d0/leng
                   itops=max(itops,bin(i))
                enddo
 
-            if(itops.gt.1)then!not likely needed
+            if(itops.gt.1*0)then!not likely needed
                lpos=leftend
                ave=0d0
                count=0d0
@@ -116,7 +118,7 @@
                   enddo
 !                  write(88,*) unk, lpos-nleng(k)/2, dble(sum)/dble(nleng(k))
                   if(idub.gt.1)then
-                  write(88,*) unk, lpos-idub,lpos-1, dble(sum)/dble(idub)
+                  write(88,*) unk, lpos-idub,lpos-1, dble(sum)!/dble(idub)
                   ave=ave+dble(sum)/dble(idub)
                   count=count+1d0
                   endif
@@ -150,8 +152,8 @@
             endif!protect bounds of bin
          endif
          if(unk /= rchr)then
-            write(*,*) unk, rchr, k
-            if(itops.gt.1)then
+            write(*,*) unk, rchr, k, itops
+            if(itops.gt.1*0)then
                lpos=leftend
                ave=0d0
                count=0d0
@@ -163,7 +165,7 @@
                      idub=idub+1
                      sum=sum+bin(j)
                   enddo
-                  write(88,*) rchr, lpos-idub,lpos-1, dble(sum)/dble(idub)
+                  write(88,*) rchr, lpos-idub,lpos-1, dble(sum)!/dble(idub)
 !                  write(88,*) unk, lpos-nleng(k)/2, dble(sum)/dble(nleng(k))
                   ave=ave+dble(sum)/dble(idub)
                   count=count+1d0
