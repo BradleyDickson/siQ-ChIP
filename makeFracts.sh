@@ -5,7 +5,7 @@ i=0
 for w in $@ ; do
 files[$i]=`basename $w .bed`
 lines[$i]=`wc -l $w |awk '{print $1}'`
-./readHist.exe $w ./Annotations.sh
+./readHist.exe $w ./Annotations.bed
 #./readHist.exe $w ./robanno.bed
 name=`basename $w .bed`
 mv fort.90 $name.90
