@@ -164,6 +164,8 @@ and replace FILENAME with the name of your data. For plotFracts.gnu this will be
 
 The ```getCircles.sh``` script will generate a gnuplot script output based on some selections you control in this shell script.  This is how we generated the SI figures showing the Frechet distance examples. To use, you would need to edit the ```awk``` statement and then use the script's output to define a gnuplot script. loading that script will create an svg like those shown in our SI-Fig. 2.
 
+The, likely, most interesting data provided by this approach is the Response distribution. In our example EXPlayout above we wrote the response data to a file called ```exp1TOexp2```. You can access the response distribution by building a histogram on column 7 of this file. The shape distribution can be accessed by building a histogram on column 5 of this same file. You can build and plot these histograms however you like. The connection to your annotations, if you had them, will be recorded in the -anno versions of this file and you may also sort and aggregate those data however you like.
+
 # Dependencies and assumptions
 You need bc, gfortran, gnuplot version 5.2 or better. This has only been tested in bourne again shell.
 
