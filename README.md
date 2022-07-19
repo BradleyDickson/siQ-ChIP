@@ -1,4 +1,4 @@
-**The first publication 'A physical basis for quantitative ChIP-seq' can be found at JBC [here.](https://www.jbc.org/content/early/2020/09/29/jbc.RA120.015353) There is also an interactive web page devoted to the mathematical model [here.](http://proteinknowledge.com/siqD3/) The code below is described in a publicatoin forthcoming, preprint here.**  
+**The first publication 'A physical basis for quantitative ChIP-seq' can be found at JBC [here.](https://pubmed.ncbi.nlm.nih.gov/32994221/) There is also an interactive web page devoted to the mathematical model [here.](http://proteinknowledge.com/siqD3/) The code below is described in a publicatoin forthcoming, preprint here.**  
 
 # The siQ-ChIP codebase WARNINGs:
 
