@@ -53,6 +53,20 @@ All of this is rolled into the getsiq.sh script(s).
 # To perform siQ-ChIP
 At this point you have determined your antibody:chromatin isotherm and managed to demonstrate clear observation of signal (captured DNA mass). Your samples have all been sequenced and you have mapped your data to your target genome. You will need the **bed** files from your alignment and you will need to prepare the following parameter files for all of your samples. (Bed files are to be sorted as noted above.)
 
+**Bed file format:** A bed file containing all QC'd paired-end reads for an IP and an INPUT sample. An example of the first few lines of one of these files are as follows where the chr, start, stop and length of reads is listed:
+
+~~~~
+chr1    100000041       100000328       287
+chr1    100000189       100000324       135
+chr1    10000021        10000169        148
+chr1    100000389       100000596       207
+chr1    100000748       100001095       347
+chr1    100000917       100001015       98
+chr1    100000964       100001113       149
+chr1    10000122        10000449        327
+chr1    100001232       100001602       370
+~~~~
+
 # Parameter files
 Each ChIP reaction has its own parameter file that contains the information required to compute the siQ-ChIP quantitative scale. Each parameter file ***must*** have the following information in the following format (example given below):
 ```
