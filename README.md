@@ -248,4 +248,4 @@ Het .00251450778728704079 .00233969077149294122 .00328295208458517318 .004375042
 
 The file called 'exp1TOexp2' in the above example will contain a full record of the peaks compared. The format of that data is as follows:
 ```peak_number chr start end frechet 1.0 response area_numerator area_denominator max_numerator max_denominator left right``` 
-where 'left' and 'right' are the location of the maximumfor that interval.
+where 'left' and 'right' are the location of the maximum for that interval.
