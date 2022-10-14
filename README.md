@@ -245,3 +245,7 @@ Enh .11654230636681297650 .12238549116555243664 .05966134230069773060 .032274870
 ZNF_Rpts .00028925052680998686 .00030137779712409452 .00029322841616883325 .00034061897867501300 .00033050823599338997 .00034155148043793302
 Het .00251450778728704079 .00233969077149294122 .00328295208458517318 .00437504248204096614 .00445036715523404625 .00452258470304143618
 ```
+
+The file called 'exp1TOexp2' in the above example will contain a full record of the peaks compared. The format of that data is as follows:
+```peak_number chr start end frechet 1.0 response area_numerator area_denominator max_numerator max_denominator left right``` 
+where 'left' and 'right' are the location of the maximumfor that interval.
