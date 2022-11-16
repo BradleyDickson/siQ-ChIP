@@ -1,6 +1,5 @@
       real*8 isiq,iscor,area
       integer ilft, irght,ilft2,irght2,Reason,ReasonA,counts
-      integer chr12,chr13
       character(len=7) :: unk,rchr
       character(len=7) :: unk2,rchr2
       character(len=44) :: siq!for hmm annos
@@ -36,7 +35,6 @@
                read(12,*,IOSTAT=Reason) unk, ilft, irght, iscor
                if(Reason.eq.0.and.index(unk,'_').gt.0)go to 32325
 
-
       irght=irght-1
       if(Reason.gt.0)then
          write(*,*) 'there was an error in input file ', path(1)
@@ -49,49 +47,48 @@
             write(*,*) 'there was an error in input file ', path(2)
          elseif(ReasonA.eq.0)then
             rchr2=unk2
-11223       continue!reuse r.13 interval
+11223       continue
 
-            if(ilft.le.irght2.and.ilft2.le.irght.and. unk2 == unk)then
+            if(ilft.le.irght2.and.ilft2.le.irght.and. unk2 == unk)then!.gt.1 for iscor was here <---
 
-               write(81,*) unk,ilft,irght, iscor, siq!
+               write(81,*) unk,ilft,irght, iscor, siq!ilft, irght, iscor!isiq, iscor !write matches
                counts=counts+1 !* (irght-ilft) !you could go on length here but change makeFracs.sh also
                area=area+iscor
 32323          continue
                read(12,*,IOSTAT=Reason) unk, ilft, irght, iscor
                if(Reason.eq.0.and.index(unk,'_').gt.0)go to 32323
                if(Reason.eq.0)go to 11223
+
             elseif(unk2 == unk.and.ilft.gt.irght2)then
-               !didnt match so far
-               if(counts.gt.0)write(90,*) unk, ilft2, irght2, counts, siq
+
+               write(90,*) unk, ilft2, irght2, counts, siq
+
                counts=0!start over, go get new anno
                area=0d0
                go to 12344!hasnt matched but need a new comp line
+
             elseif(unk2 == unk.and.ilft2.gt.irght)then!what for iscor?
-               !gave up on this interval --- no --- rather, keep processing
+
 32324          continue
                read(12,*,IOSTAT=Reason) unk, ilft, irght, iscor
                if(Reason.eq.0.and.index(unk,'_').gt.0)go to 32324
+
                if(Reason.eq.0)go to 11223
             elseif(unk2 /= unk)then
-               if(unk /= unk2)then!i know this seems odd but...
-               !gave up on this interval
-                  if(counts.gt.0)write(90,*) unk, ilft, irght, counts, siq 
-                  counts=0
-                  area=0d0
-                  !                  go to 12345 --- tests here
-38324             continue
-                  read(12,*,IOSTAT=Reason) unk, ilft, irght, iscor
-                  if(Reason.eq.0.and.index(unk,'_').gt.0)go to 38324!read through
-                  if(Reason.eq.0)go to 11223
+               if(ilft.gt.irght2)then
 
-               endif!seems odd but gives evidence of not finding annotation things
-               write(82,*) unk2, ilft2, irght2, siq, unk, ilft!testing for lost
-               write(82,*) chr12, chr13, chr12-chr13
+               write(90,*) unk, ilft, irght, counts, siq
 
-               go to 12344!
+               counts=0
+               area=0d0
+                  go to 12345
+               endif
+
+               write(82,*) unk2, ilft2, irght2, isiq, iscor!testing for lost
+               go to 12344!get new comp
             endif
          endif
-!         go to 12345
+
       endif
       close(12)
       close(13)
