@@ -26,7 +26,6 @@ gfortran -O3 -fbounds-check tracks.f90
 ./a.out $ipfile $infile $widths $widths
 
 
-
 #get alpha
 gfortran -O3 -fbounds-check getalpha.f90
 a=`./a.out $paramfile $nin $nip`
@@ -38,4 +37,6 @@ gfortran -O3 -fbounds-check mergetracks.f90
 ./a.out IP.data IN.data $a $dep 
 mv mergedSIQ.data $tag.bed
 echo "you created the file: " $tag.bed
+mv IP.data NormCovIP-$tag.bed
+mv IN.data NormCovIN-$tag.bed
 fi
