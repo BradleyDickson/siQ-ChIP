@@ -1,4 +1,4 @@
-**The first publication 'A physical basis for quantitative ChIP-seq' can be found at JBC [here.](https://pubmed.ncbi.nlm.nih.gov/32994221/) There is also an interactive web page devoted to the mathematical model [here.](http://proteinknowledge.com/siqD3/) The code below is described in a publicatoin forthcoming, preprint here.**  
+**The first publication 'A physical basis for quantitative ChIP-seq' can be found at JBC [here.](https://pubmed.ncbi.nlm.nih.gov/32994221/) There is also an interactive web page devoted to the mathematical model [here.](http://proteinknowledge.com/siqD3/) A new object (and concept) called normalized coverage, and the basis for the codes below, were introduced in the latest siQ-ChIP paper [here.](https://www.nature.com/articles/s41598-023-34430-2).**  
 
 # The siQ-ChIP codebase WARNINGs:
 
