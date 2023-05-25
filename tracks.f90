@@ -78,7 +78,7 @@
             leftend=ilft
             rightend=ilft+leng!same as irght sometimes
             do i=1,rightend-leftend
-               bin(i)=bin(i)+1d0/leng
+               bin(i)=bin(i)+1d0/dble(leng)
                itops=max(itops,bin(i))
             enddo
             go to 12345
@@ -92,14 +92,14 @@
 !            endif
             if(1+ilft-leftend.lt.100000.and.rightend-leftend.le.100000)then
             do i=min(100000,1+ilft-leftend),min(100000,1+ilft-leftend+leng)!rightend-leftend
-               bin(i)=bin(i)+1d0/leng
+               bin(i)=bin(i)+1d0/dble(leng)
                itops=max(itops,bin(i))
             enddo   
             go to 12345
             else!the bounds of bin will be exceeded so reset bins now-can happen on inputs
                !final update and dump it out
                do i=min(100000,1+ilft-leftend),min(100000,1+ilft-leftend+leng)!rightend-leftend
-                  bin(i)=bin(i)+1d0/leng
+                  bin(i)=bin(i)+1d0/dble(leng)
                   itops=max(itops,bin(i))
                enddo
 
@@ -144,6 +144,10 @@
                   bin(j)=bin(i)
                   itops=max(itops,bin(j))                  
                enddo!anything outside should have been zero anyway
+               !we need to implement better bookkeeping right here, imho
+               do i=j+1,100000
+                  bin(i)=0d0
+               enddo
                leftend=ilft
                rightend=irght!rightend!same one
             endif
