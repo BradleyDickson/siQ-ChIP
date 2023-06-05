@@ -37,6 +37,10 @@ gfortran -O3 -fbounds-check mergetracks.f90
 ./a.out IP.data IN.data $a $dep 
 mv mergedSIQ.data $tag.bed
 echo "you created the file: " $tag.bed
-mv IP.data NormCovIP-$tag.bed
-mv IN.data NormCovIN-$tag.bed
+
+nl=`wc -l $ipfile |awk '{print $1}'`
+awk -v var=$nl '{print $1,$2,$3,$4/var}' IP.data > NormCovIP-$tag.bed
+nl=`wc -l $infile |awk '{print $1}'`
+awk -v var=$nl '{print $1,$2,$3,$4/var}' IN.data > NormCovIN-$tag.bed
+
 fi
