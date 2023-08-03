@@ -1,49 +1,39 @@
 **The first publication 'A physical basis for quantitative ChIP-seq' can be found at JBC [here.](https://pubmed.ncbi.nlm.nih.gov/32994221/) There is also an interactive web page devoted to the mathematical model [here.](http://proteinknowledge.com/siqD3/) A new object (and concept) called normalized coverage, and the basis for the codes below, were introduced in the latest siQ-ChIP paper [here.](https://www.nature.com/articles/s41598-023-34430-2).**  
 
-# The siQ-ChIP codebase WARNINGs:
-
-- Clone this repo. Do not cut and paste the fortran files.
-- Paired-end sequencing only (this could be ignored but it will be you who suffers)
-- Please don't cut and paste from spreadsheets and webpages. (unless you know how to remove special/binary characters)
-- No dashes in your file names.
-- Tripple check your file names in EXPlayout, this is the number one error source.
-- Some human-genome-specific things are hardcoded. We have set this up for mouse but the code here is for **HUMAN**. Reach out to me if you're using this outside human genome, it is easy to adapt to other cases.
-- Your bed files should be sorted as ```sort -k1,1 -k2,2n``` and should only contain 4 columns: chr start stop length. You can find details for how we align [here](https://www.jbc.org/content/early/2020/09/29/jbc.RA120.015353).
-- If you want to use the getHeatMaps.sh script, you will have to customize it.
 
 # Philosophy of use
 
-siQ-ChIP is all about comparing sets of ChIP-seq data. Because of this, the siQ-ChIP code has been put together to make it easy to work on and compare multiple ChIP-seq datasets all at once. Therefore, the central object in using the siQ-ChIP code is the **EXPlayout** file. Once you create this file (and create parameter files) the siQ-ChIP scripts will do the rest. The EXPlayout file declares which IP, input, and parameter files go together to generate siQ-ChIP tracks and it declares which (if any) sets of siQ-ChIP tracks should be compared.
+siQ-ChIP is all about comparing sets of ChIP-seq data. Because of this, the siQ-ChIP code has been put together to make it easy to work on and compare multiple ChIP-seq datasets all at once. Therefore, the central object in using the siQ-ChIP code is the **EXPlayout** file. Once you create this file (and create parameter files, etc, see below) the siQ-ChIP scripts will do the rest. The EXPlayout file declares which IP, input, and parameter files go together to generate siQ-ChIP tracks and it declares which (if any) sets of siQ-ChIP tracks should be compared.
 
-Building data looks like---> ****Do each of these****:
+To give you a quick sense of what siQ will require, you will need the following starting ingredients. We will cover all details for each of these points below. 
 
-1) build bed files of sequencing data
+1) bed files of aligned sequencing data
 
-2) build parameter files for siQ scaling
+2) parameter files for siQ scaling (IP mass, input mass, average fragment length)
 
-3) build EXPlayout file for your experiment
+3) build EXPlayout file for your experiment (to define which ip, input, and parameters go together)
 
-4) Link any annotations you want: ``` ln -s PATH/your_annotations.bed ./Annotations.bed``` ---> You gotta use Annotations.bed for the name you link to!
+4) Link any annotations you want: ``` ln -s PATH/your_annotations.bed ./Annotations.bed``` ---> You gotta use Annotations.bed for the name you link to! If you have none, use ```touch Annotations.bed```
 
-5) Execute ```./getsiq.sh``` or for HPC ```nohup ./getsiq.sh > Errors.out &```
+5) Execute ```./getsiq.sh``` or whatever is appropriate for your HPC
 
 Each of these steps (save for generating your aligned bed files) is discussed below.
 
-# Things we do for siQ-ChIP data
+# Things that happen during siQ-ChIP data build
 
-- Compute <img src="https://render.githubusercontent.com/render/math?math=\alpha"> from DNA masses, DNA fragment lengths, reaction volumes
+- Compute <img src="https://render.githubusercontent.com/render/math?math=\alpha"> from DNA masses, DNA fragment lengths, reaction volumes, depths
 
-- Build IP track
+- Build IP track (normalized coverage)
 
-- Build input track
+- Build input track (normalizedcoverage)
 
 - Build scaled tracks <img src="https://render.githubusercontent.com/render/math?math=s(x)=\alpha\frac{IP(x)}{input(x)}">
 
-- Annotate fragment distributions for no-track visualization
+- Annotate fragment distributions for no-track visualization (see Fig4 [here](https://www.nature.com/articles/s41598-023-34430-2) )
 
 - Compare response (scale and shape) in all pairs of <img src="https://render.githubusercontent.com/render/math?math=s_{cntl}"> and <img src="https://render.githubusercontent.com/render/math?math=s_{exp}">
     - detect and collect peak locations
-    - compute area response
+    - compute area response (used by plotResponse.gnu to generate the response distribution)
     - compute Frechet distances
     - write database for this information
 - Annotate responses for track-based visualization    
@@ -51,7 +41,7 @@ Each of these steps (save for generating your aligned bed files) is discussed be
 All of this is rolled into the getsiq.sh script(s).
 
 # To perform siQ-ChIP
-At this point you have determined your antibody:chromatin isotherm and managed to demonstrate clear observation of signal (captured DNA mass). Your samples have all been sequenced and you have mapped your data to your target genome. You will need the **bed** files from your alignment and you will need to prepare the following parameter files for all of your samples. (Bed files are to be sorted as noted above.)
+At this point you have determined your antibody:chromatin isotherm and managed to demonstrate clear observation of signal (captured DNA mass). Or maybe you just did ChIP without this isotherm, and that's ok. You can still apply the analysis here, but you inherit some caveats. Your samples have all been sequenced and you have mapped your data to your target genome. You will need the **bed** files from your alignment and you will need to prepare the following parameter files for all of your samples. (Bed files are to be sorted as usual with ```sort -k1,1 -k2,2n```)
 
 **Bed file format:** A bed file containing all QC'd paired-end reads for an IP and an INPUT sample. An example of the first few lines of one of these files are as follows where the chr, start, stop and length of reads is listed:
 
@@ -87,11 +77,12 @@ An example file would look like this:
 400
 382
 ```
+You may take input sample, then split the remaining chromatin for separate IPs. That's fine. Just be sure to enter the IP volume plus the input volume for the total volume in this parameter file.
 
 At this point, you have a parameter file for each of your samples and you have a bed file for each sample (IP and input). Next, you need to build a "layout file" to tell the siQ-ChIP scripts which files go together and which samples should be quantitatively compared. 
 
 # The EXPlayout file
-siQ-ChIP enables the comparison of two or more ChIP-seq experiments. So we assume you have two IP datasets, two input datasets, and two sets of measurements required to evaluate the quantitative scale for each of these IP-cases.
+siQ-ChIP enables the comparison of two or more ChIP-seq experiments. So we assume you have two IP datasets, two input datasets, and two sets of measurements required to evaluate the quantitative scale for each of these IP-cases. It is fine if you have one input that was shared for different IP.
 
 The siQ-ChIP track for experiment 1 is built by combining ```IP1.bed input1.bed params1.in``` Likewise, the second experiment is processed using ```IP2.bed input2.bed params2.in```. This is to say that the IP, input, and measurements (params) will be integrated to produce one track (at quantified scale) for each experiment.
 
@@ -106,6 +97,27 @@ exp1siq.bed exp2siq.bed exp1TOexp2
 IP1.bed IP2.bed input1.bed input2.bed MyExperiment
 #END
 ```
+If you only have one IP and one input, the you may make an EXPlayout like this:
+```
+#getTracks: IP.bed input.bed params output_name
+IP1.bed input1.bed params1.in exp1siq
+#getResponse: CNTR.bed EXP.bed output_name
+#getFracts: data any order, last is output_name
+#END
+```
+This will only build the siQ-scaled track that you have data for.
+
+Likewise, you could compare two tracks that you've already built with siQ, as follows:
+```
+#getTracks: IP.bed input.bed params output_name
+#getResponse: CNTR.bed EXP.bed output_name
+exp1siq.bed exp2siq.bed exp1TOexp2
+#getFracts: data any order, last is output_name
+#END
+```
+This is useful if you thought of a comparison to make after you built your siQ scaled tracks, or if you acquired new data at a later time and don't need to rebuild all siQ-tracks.
+
+The key here is that you need these section headers in EXPlayout, but the sections can be empty. Finally, you have to use the name EXPlayout. If you have to redo something or add a new comparison, save your EXPlayout to a meaningful name. Then edit it. This might get improved at a later time.
 
 The getFracts section outputs datafiles named MyExperiment.
 
@@ -113,15 +125,15 @@ The names **exp1siq** and **exp2siq** are arbitrary, but be sure to use consiste
 
 Whitespace in this EXPlayout file will break your run. Be careful if you copy and paste to generate this file. Always check for characters that are hidden, particularly if you cut and paste from webpage like GitHub!!!
 
-You need to provide aligned bed files for IP and input and you need to provide the paramter files (params.in) for computing the quantitative scale. The names of these files will not matter, but be consistent in your use of the file names.
+You need to provide aligned bed files for IP and input and you need to provide the paramter files (params.in) for computing the quantitative scale. The names of these files will not matter, but be consistent in your use of the file names. A lot of error happens here, just with typos or inconsistent naming.
 
 #Build siQ-ChIP data
-Now you can build your siQ-ChIP data using ```./getsiq.sh```
+Now you can build your siQ-ChIP data using ```./getsiq.sh``` which can go at commandline or in a submission script.
 
 
 # EXPlayout for p300/CBP inhibition
 
-In our publication we studied drug treatment in a cell system. We had *control* datasets:
+In our [publication](https://www.nature.com/articles/s41598-023-34430-2) we studied drug treatment in a cell system. We had *control* datasets:
 
 -DMSO treated cells IP'd by H3K18ac and H3K27ac antibody and we have an input sample from DMSO treated cells.
 
@@ -137,8 +149,8 @@ The first step was to create **params.in** files for each of the **six** IPs. Th
 -the total volume before removal of input
 -input DNA mass (ng)
 -IP DNA mass (ng)
--IP average fragment length (base pair, from Bioanalyzer)
--input average fragment length (base pair, from Bioanalyzer)
+-IP average fragment length (base pair, from Bioanalyzer after library prep)
+-input average fragment length (base pair, from Bioanalyzer after library prep)
 
 Here is an example file from DMSO H3K18ac IP named DMSOK18params.in:
 ```
@@ -172,6 +184,8 @@ DMSOK18a.bed CBPK18ac.bed A485K18a.bed DMinput.bed CBinput.bed A4input.bed K18_f
 All of the parameter files, siQ-scaled tracks, and fastq files can be found at [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE207783) The complete database of peaks is here on git and is called databases-p300.tgz
 
 # Plotting results with our scripts for gnuplot
+I use gnuplot and bash and fortran (as you can tell). I don't use R. We are going to work on getting some of these scripts working in R. If you know gnuplot and you know R, maybe you can help?
+
 The gnuplot scripts ```plotFracts.gnu``` and ```plotResponse.gnu``` are straightforward to use. These scripts will plot the heat map for fractional composition and the peak-based response distributions, respectively. Within each script you need to find the line
 ```path="./FILENAME" #you file name here```
 and replace FILENAME with the name of your data. For plotFracts.gnu this will be the name you declared in the #getFracts section of the EXPlayout file. For plotResponse.gnu this will be the name you declared in the #getResponse section of EXPlayout **appended with -anno**. For example, based on the EXPlayout above for the p300/CBP inhibition studies we might use Ldms2cbpK27NS-anno for plotResponse.gnu and K27_fractions (or K18_fractions) for plotFracts.gnu. **You will have to modify the annotation class names in this file if you do not conform to the names used by the ChromHmm annotations.**
@@ -181,7 +195,7 @@ The ```getCircles.sh``` script will generate a gnuplot script output based on so
 The, likely, most interesting data provided by this approach is the Response distribution. In our example EXPlayout above we wrote the response data to a file called ```exp1TOexp2```. You can access the response distribution by building a histogram on column 7 of this file. The shape distribution can be accessed by building a histogram on column 5 of this same file. You can build and plot these histograms however you like. The connection to your annotations, if you had them, will be recorded in the -anno versions of this file and you may also sort and aggregate those data however you like.
 
 # Dependencies and assumptions
-You need bc, gfortran, gnuplot version 5.2 or better. This has only been tested in bourne again shell.
+You need bc (bash calculator), gfortran, gnuplot version 5.2 or better. This has only been tested in bourne again shell.
 
 # What to do after you run the code: Understanding outputs
 
@@ -248,4 +262,15 @@ Het .00251450778728704079 .00233969077149294122 .00328295208458517318 .004375042
 
 The file called 'exp1TOexp2' in the above example will contain a full record of the peaks compared. The format of that data is as follows:
 ```peak_number chr start end frechet 1.0 response area_numerator area_denominator max_numerator max_denominator left right``` 
-where 'left' and 'right' are the location of the maximum for that interval.
+where 'left' and 'right' are the location of the maximum for that interval. You can glean a lot about your data by operating on this file. 
+
+# The siQ-ChIP codebase WARNINGs:
+
+- Clone this repo. Do not cut and paste the fortran files.
+- Paired-end sequencing only (this could be ignored but it will be you who suffers)
+- Please don't cut and paste from spreadsheets and webpages. (unless you know how to remove special/binary characters)
+- No dashes in your file names.
+- Tripple check your file names in EXPlayout, this is the number one error source.
+- Some human-genome-specific things are hardcoded. We have set this up for mouse but the code here is for **HUMAN**. Reach out to me if you're using this outside human genome, it is easy to adapt to other cases.
+- Your bed files should be sorted as ```sort -k1,1 -k2,2n``` and should only contain 4 columns: chr start stop length. You can find details for how we align [here](https://www.jbc.org/content/early/2020/09/29/jbc.RA120.015353).
+- If you want to use the getHeatMaps.sh script, you will have to customize it.
