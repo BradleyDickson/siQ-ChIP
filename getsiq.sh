@@ -1,4 +1,4 @@
-echo "We assume your annotations are sorted as 'sort -k1,1 -k2,2n' oterwise this will fail"
+echo "We assume your annotations are sorted as 'sort -k1,1 -k2,2n' otherwise this will fail"
 echo "Make sure your annotations are linked 'ln -s SORTEDannotations.bed ./Annotations.bed' HERE"
 FILE=./Annotations.bed
 if [ -f "$FILE" ] ; then
