@@ -39,8 +39,8 @@ mv mergedSIQ.data $tag.bed
 echo "you created the file: " $tag.bed
 
 nl=`wc -l $ipfile |awk '{print $1}'`
-awk -v var=$nl '{print $1,$2,$3,$4/var}' IP.data > NormCovIP-$tag.bed
+awk -v var=$nl '{print $1,$2,$3,$4/var}' IP.data > NormCovIP_$tag.bed
 nl=`wc -l $infile |awk '{print $1}'`
-awk -v var=$nl '{print $1,$2,$3,$4/var}' IN.data > NormCovIN-$tag.bed
+awk -v var=$nl '{print $1,$2,$3,$4/var}' IN.data > NormCovIN_$tag.bed
 
 fi
