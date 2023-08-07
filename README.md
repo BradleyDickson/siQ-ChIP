@@ -274,3 +274,4 @@ where 'left' and 'right' are the location of the maximum for that interval. You 
 - Some human-genome-specific things are hardcoded. We have set this up for mouse but the code here is for **HUMAN**. Reach out to me if you're using this outside human genome, it is easy to adapt to other cases.
 - Your bed files should be sorted as ```sort -k1,1 -k2,2n``` and should only contain 4 columns: chr start stop length. You can find details for how we align [here](https://www.jbc.org/content/early/2020/09/29/jbc.RA120.015353).
 - If you want to use the getHeatMaps.sh script, you will have to customize it.
+- Looks like annotation step can fail if your bed files begin with odd spike-in names (observed on synthetic spike-ins)
