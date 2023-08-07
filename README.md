@@ -15,7 +15,7 @@ To give you a quick sense of what siQ will require, you will need the following 
 
 4) Link any annotations you want: ``` ln -s PATH/your_annotations.bed ./Annotations.bed``` ---> You gotta use Annotations.bed for the name you link to! If you have none, use ```touch Annotations.bed```
 
-5) Execute ```./getsiq.sh``` or whatever is appropriate for your HPC
+5) Execute ```./getsiq.sh > errorfile``` or whatever is appropriate for your HPC
 
 Each of these steps (save for generating your aligned bed files) is discussed below.
 
@@ -128,7 +128,7 @@ Whitespace in this EXPlayout file will break your run. Be careful if you copy an
 You need to provide aligned bed files for IP and input and you need to provide the paramter files (params.in) for computing the quantitative scale. The names of these files will not matter, but be consistent in your use of the file names. A lot of error happens here, just with typos or inconsistent naming.
 
 #Build siQ-ChIP data
-Now you can build your siQ-ChIP data using ```./getsiq.sh``` which can go at commandline or in a submission script.
+Now you can build your siQ-ChIP data using ```./getsiq.sh > errorfile``` which can go at commandline or in a submission script.
 
 
 # EXPlayout for p300/CBP inhibition
