@@ -34,7 +34,7 @@ Each of these steps (save for generating your aligned bed files) is discussed be
 - Compare response (scale and shape) in all pairs of <img src="https://render.githubusercontent.com/render/math?math=s_{cntl}"> and <img src="https://render.githubusercontent.com/render/math?math=s_{exp}">
     - detect and collect peak locations
     - compute area response (used by plotResponse.gnu to generate the response distribution)
-    - compute Frechet distances
+    - compute Frechet distances (optimization of scale is turned off for speed)
     - write database for this information
 - Annotate responses for track-based visualization    
 
